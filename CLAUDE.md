@@ -5,7 +5,11 @@
 ## Структура
 
 ```
-
+wrangler.toml       конфиг Cloudflare Workers (статические ассеты)
+public/
+  index.html         разметка страницы
+  style.css           стили
+  game.js              логика игры и таймера задачи
 ```
 
 Деплой — через GitHub-интеграцию

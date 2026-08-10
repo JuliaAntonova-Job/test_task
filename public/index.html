@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Пока грузится</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1>Пока грузится</h1>
+    <p id="status">Нажмите кнопку, чтобы запустить задачу</p>
+
+    <button id="start-btn">Начать задачу</button>
+
+    <div id="game-field">
+      <div id="basket"></div>
+    </div>
+
+    <p id="hint">Ловите звёзды корзиной — стрелки ← →</p>
+
+    <div id="result" hidden>
+      <p id="result-status"></p>
+      <p id="result-score"></p>
+    </div>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
