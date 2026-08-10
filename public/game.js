@@ -11,14 +11,16 @@ const INITIAL_LIVES = 3;
 
 const startBtn = document.getElementById('start-btn');
 const statusEl = document.getElementById('status');
+const timerEl = document.getElementById('timer');
 const gameField = document.getElementById('game-field');
 const basketEl = document.getElementById('basket');
 const livesEl = document.getElementById('lives');
-const resultEl = document.getElementById('result');
-const resultStatusEl = document.getElementById('result-status');
-const resultScoreEl = document.getElementById('result-score');
 const loseModalEl = document.getElementById('lose-modal');
+const loseScoreEl = document.getElementById('lose-score');
 const restartRoundBtn = document.getElementById('restart-round-btn');
+const completeModalEl = document.getElementById('complete-modal');
+const completeScoreEl = document.getElementById('complete-score');
+const completeOkBtn = document.getElementById('complete-ok-btn');
 
 const fieldWidth = gameField.clientWidth;
 const fieldHeight = gameField.clientHeight;
@@ -34,6 +36,8 @@ let taskRunning = false;
 let spawnIntervalId = null;
 let animationFrameId = null;
 let taskTimeoutId = null;
+let taskTimerIntervalId = null;
+let taskStartTime = 0;
 let currentSpawnInterval = STAR_SPAWN_INTERVAL_INITIAL_MS;
 
 // Отслеживаем нажатые стрелки
@@ -49,6 +53,14 @@ document.addEventListener('keyup', (e) => {
 
 function updateLivesDisplay() {
   livesEl.textContent = `Жизни: ${lives}`;
+}
+
+function updateTaskTimer() {
+  const elapsedSec = Math.min(
+    Math.floor((Date.now() - taskStartTime) / 1000),
+    TASK_DURATION_MS / 1000
+  );
+  timerEl.textContent = `${elapsedSec} / ${TASK_DURATION_MS / 1000} сек`;
 }
 
 function spawnStar() {
@@ -113,6 +125,7 @@ function updateStars() {
 
     if (lives === 0) {
       stopGame();
+      loseScoreEl.textContent = `Поймано звёзд: ${score}`;
       loseModalEl.hidden = false;
     }
   }
@@ -166,14 +179,15 @@ function stopGame() {
 function finishTask() {
   taskRunning = false;
   stopGame();
+  clearInterval(taskTimerIntervalId);
   loseModalEl.hidden = true;
 
-  resultEl.hidden = false;
-  resultStatusEl.textContent = 'Задача выполнена ✅';
-  resultScoreEl.textContent = `Поймано звёзд: ${score}`;
-
   statusEl.textContent = 'Задача завершена';
+  timerEl.textContent = '';
   startBtn.disabled = false;
+
+  completeScoreEl.textContent = `Поймано звёзд: ${score}`;
+  completeModalEl.hidden = false;
 }
 
 restartRoundBtn.addEventListener('click', () => {
@@ -183,13 +197,21 @@ restartRoundBtn.addEventListener('click', () => {
   animationFrameId = requestAnimationFrame(gameLoop);
 });
 
+completeOkBtn.addEventListener('click', () => {
+  completeModalEl.hidden = true;
+});
+
 startBtn.addEventListener('click', () => {
   if (taskRunning) return;
 
   taskRunning = true;
   startBtn.disabled = true;
   statusEl.textContent = 'Задача выполняется…';
-  resultEl.hidden = true;
+  completeModalEl.hidden = true;
+
+  taskStartTime = Date.now();
+  updateTaskTimer();
+  taskTimerIntervalId = setInterval(updateTaskTimer, 250);
 
   startGame();
   taskTimeoutId = setTimeout(finishTask, TASK_DURATION_MS);

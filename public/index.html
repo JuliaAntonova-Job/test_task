@@ -9,7 +9,7 @@
 <body>
   <main>
     <h1>Пока грузится</h1>
-    <p id="status">Нажмите кнопку, чтобы запустить задачу</p>
+    <p><span id="status">Нажмите кнопку, чтобы запустить задачу</span> <span id="timer"></span></p>
 
     <button id="start-btn">Начать задачу</button>
 
@@ -19,17 +19,21 @@
 
     <p id="hint">Ловите звёзды корзиной — стрелки ← →</p>
     <p id="lives">Жизни: 3</p>
-
-    <div id="result" hidden>
-      <p id="result-status"></p>
-      <p id="result-score"></p>
-    </div>
   </main>
 
-  <div id="lose-modal" hidden>
-    <div id="lose-modal-content">
+  <div id="lose-modal" class="modal-overlay" hidden>
+    <div class="modal-content">
       <p>Вы проиграли</p>
-      <button id="restart-round-btn">Начать сначала</button>
+      <p id="lose-score"></p>
+      <button id="restart-round-btn" class="modal-btn">Начать сначала</button>
+    </div>
+  </div>
+
+  <div id="complete-modal" class="modal-overlay" hidden>
+    <div class="modal-content">
+      <p>Задача выполнена ✅</p>
+      <p id="complete-score"></p>
+      <button id="complete-ok-btn" class="modal-btn">ОК</button>
     </div>
   </div>
 

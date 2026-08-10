@@ -38,6 +38,10 @@ main {
   font-size: 14px;
 }
 
+#timer {
+  color: #94a3b8;
+}
+
 #game-field {
   position: relative;
   width: 420px;
@@ -65,12 +69,7 @@ main {
   border-radius: 6px 6px 12px 12px;
 }
 
-#result {
-  margin-top: 16px;
-  font-size: 18px;
-}
-
-#lose-modal {
+.modal-overlay {
   position: fixed;
   inset: 0;
   display: flex;
@@ -79,11 +78,11 @@ main {
   background: rgba(0, 0, 0, 0.6);
 }
 
-#lose-modal[hidden] {
+.modal-overlay[hidden] {
   display: none;
 }
 
-#lose-modal-content {
+.modal-content {
   background: #1e293b;
   padding: 24px 32px;
   border-radius: 12px;
@@ -91,7 +90,7 @@ main {
   font-size: 18px;
 }
 
-#restart-round-btn {
+.modal-btn {
   margin-top: 12px;
   font-size: 16px;
   padding: 8px 20px;
