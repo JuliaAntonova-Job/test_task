@@ -69,3 +69,35 @@ main {
   margin-top: 16px;
   font-size: 18px;
 }
+
+#lose-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+#lose-modal[hidden] {
+  display: none;
+}
+
+#lose-modal-content {
+  background: #1e293b;
+  padding: 24px 32px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 18px;
+}
+
+#restart-round-btn {
+  margin-top: 12px;
+  font-size: 16px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #6366f1;
+  color: #fff;
+  cursor: pointer;
+}

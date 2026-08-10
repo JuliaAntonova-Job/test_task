@@ -17,6 +17,8 @@ const livesEl = document.getElementById('lives');
 const resultEl = document.getElementById('result');
 const resultStatusEl = document.getElementById('result-status');
 const resultScoreEl = document.getElementById('result-score');
+const loseModalEl = document.getElementById('lose-modal');
+const restartRoundBtn = document.getElementById('restart-round-btn');
 
 const fieldWidth = gameField.clientWidth;
 const fieldHeight = gameField.clientHeight;
@@ -110,7 +112,8 @@ function updateStars() {
     updateLivesDisplay();
 
     if (lives === 0) {
-      restartRound();
+      stopGame();
+      loseModalEl.hidden = false;
     }
   }
 }
@@ -153,13 +156,6 @@ function startGame() {
   animationFrameId = requestAnimationFrame(gameLoop);
 }
 
-// Жизни закончились: раунд начинается заново, но таймер задачи не останавливается
-function restartRound() {
-  clearTimeout(spawnIntervalId);
-  resetRoundState();
-  scheduleNextStar();
-}
-
 function stopGame() {
   clearTimeout(spawnIntervalId);
   cancelAnimationFrame(animationFrameId);
@@ -170,6 +166,7 @@ function stopGame() {
 function finishTask() {
   taskRunning = false;
   stopGame();
+  loseModalEl.hidden = true;
 
   resultEl.hidden = false;
   resultStatusEl.textContent = 'Задача выполнена ✅';
@@ -178,6 +175,13 @@ function finishTask() {
   statusEl.textContent = 'Задача завершена';
   startBtn.disabled = false;
 }
+
+restartRoundBtn.addEventListener('click', () => {
+  loseModalEl.hidden = true;
+  resetRoundState();
+  scheduleNextStar();
+  animationFrameId = requestAnimationFrame(gameLoop);
+});
 
 startBtn.addEventListener('click', () => {
   if (taskRunning) return;
