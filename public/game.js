@@ -2,7 +2,8 @@
 const TASK_DURATION_MS = 30000;
 
 // Настройки игры
-const STAR_SPAWN_INTERVAL_MS = 600;
+const STAR_SPAWN_INTERVAL_MS = 600; // интервал спавна к концу задачи
+const STAR_SPAWN_INTERVAL_INITIAL_MS = STAR_SPAWN_INTERVAL_MS * 5; // в начале звёзд в 5 раз меньше
 const STAR_FALL_SPEED = 2.2; // пикселей за кадр
 const BASKET_SPEED = 6; // пикселей за кадр
 
@@ -27,6 +28,7 @@ let taskRunning = false;
 let spawnIntervalId = null;
 let animationFrameId = null;
 let taskTimeoutId = null;
+let taskStartTime = 0;
 
 // Отслеживаем нажатые стрелки
 document.addEventListener('keydown', (e) => {
@@ -100,18 +102,32 @@ function gameLoop() {
   animationFrameId = requestAnimationFrame(gameLoop);
 }
 
+// Интервал спавна постепенно уменьшается от STAR_SPAWN_INTERVAL_INITIAL_MS
+// до STAR_SPAWN_INTERVAL_MS по мере выполнения задачи — звёзд становится больше
+function scheduleNextStar() {
+  spawnStar();
+
+  const progress = Math.min((Date.now() - taskStartTime) / TASK_DURATION_MS, 1);
+  const interval =
+    STAR_SPAWN_INTERVAL_INITIAL_MS +
+    (STAR_SPAWN_INTERVAL_MS - STAR_SPAWN_INTERVAL_INITIAL_MS) * progress;
+
+  spawnIntervalId = setTimeout(scheduleNextStar, interval);
+}
+
 function startGame() {
   score = 0;
   stars.forEach((star) => star.el.remove());
   stars = [];
   basketX = fieldWidth / 2 - basketWidth / 2;
+  taskStartTime = Date.now();
 
-  spawnIntervalId = setInterval(spawnStar, STAR_SPAWN_INTERVAL_MS);
+  scheduleNextStar();
   animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 function stopGame() {
-  clearInterval(spawnIntervalId);
+  clearTimeout(spawnIntervalId);
   cancelAnimationFrame(animationFrameId);
   stars.forEach((star) => star.el.remove());
   stars = [];
