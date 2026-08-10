@@ -9,7 +9,7 @@
 <body>
   <main>
     <h1>Пока грузится</h1>
-    <p><span id="status">Нажмите кнопку, чтобы запустить задачу</span> <span id="timer"></span></p>
+    <p aria-live="polite"><span id="status">Нажмите кнопку, чтобы запустить задачу</span> <span id="timer"></span></p>
 
     <button id="start-btn">Начать задачу</button>
 
@@ -18,20 +18,26 @@
     </div>
 
     <p id="hint">Ловите звёзды корзиной — стрелки ← →</p>
-    <p id="lives">Жизни: 3</p>
+    <div id="lives" aria-live="polite"></div>
   </main>
 
-  <div id="lose-modal" class="modal-overlay" hidden>
+  <div id="lose-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="lose-modal-title" hidden>
     <div class="modal-content">
-      <p>Вы проиграли</p>
+      <svg class="modal-icon modal-icon--lose" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+      </svg>
+      <p id="lose-modal-title">Вы проиграли</p>
       <p id="lose-score"></p>
       <button id="restart-round-btn" class="modal-btn">Начать сначала</button>
     </div>
   </div>
 
-  <div id="complete-modal" class="modal-overlay" hidden>
+  <div id="complete-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="complete-modal-title" hidden>
     <div class="modal-content">
-      <p>Задача выполнена ✅</p>
+      <svg class="modal-icon modal-icon--complete" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" />
+      </svg>
+      <p id="complete-modal-title">Задача выполнена</p>
       <p id="complete-score"></p>
       <button id="complete-ok-btn" class="modal-btn">ОК</button>
     </div>

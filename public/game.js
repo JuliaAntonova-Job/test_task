@@ -9,6 +9,12 @@ const STAR_FALL_SPEED = 2.2; // пикселей за кадр
 const BASKET_SPEED = 6; // пикселей за кадр
 const INITIAL_LIVES = 3;
 
+const STAR_SVG =
+  '<svg viewBox="0 0 24 24" fill="#facc15" aria-hidden="true"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 7.1-1.01L12 2z"/></svg>';
+
+const HEART_ICON_PATH =
+  'M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z';
+
 const startBtn = document.getElementById('start-btn');
 const statusEl = document.getElementById('status');
 const timerEl = document.getElementById('timer');
@@ -51,8 +57,15 @@ document.addEventListener('keyup', (e) => {
   pressedKeys.delete(e.key);
 });
 
+updateLivesDisplay();
+
 function updateLivesDisplay() {
-  livesEl.textContent = `Жизни: ${lives}`;
+  const hearts = Array.from({ length: INITIAL_LIVES }, (_, i) => {
+    const filledClass = i < lives ? 'heart-icon--filled' : 'heart-icon--empty';
+    return `<svg class="heart-icon ${filledClass}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${HEART_ICON_PATH}"/></svg>`;
+  }).join('');
+
+  livesEl.innerHTML = `<span class="sr-only">Жизни: ${lives} из ${INITIAL_LIVES}</span>${hearts}`;
 }
 
 function updateTaskTimer() {
@@ -66,11 +79,11 @@ function updateTaskTimer() {
 function spawnStar() {
   const el = document.createElement('div');
   el.className = 'star';
-  el.textContent = '⭐';
+  el.innerHTML = STAR_SVG;
 
   const x = Math.random() * (fieldWidth - 24);
   el.style.left = `${x}px`;
-  el.style.top = '-24px';
+  el.style.transform = 'translateY(-24px)';
 
   gameField.appendChild(el);
   stars.push({ el, x, y: -24 });
@@ -94,7 +107,7 @@ function updateStars() {
 
   stars = stars.filter((star) => {
     star.y += STAR_FALL_SPEED;
-    star.el.style.top = `${star.y}px`;
+    star.el.style.transform = `translateY(${star.y}px)`;
 
     // Проверка поимки корзиной
     const caught =
@@ -127,6 +140,7 @@ function updateStars() {
       stopGame();
       loseScoreEl.textContent = `Поймано звёзд: ${score}`;
       loseModalEl.hidden = false;
+      restartRoundBtn.focus();
     }
   }
 }
@@ -188,6 +202,7 @@ function finishTask() {
 
   completeScoreEl.textContent = `Поймано звёзд: ${score}`;
   completeModalEl.hidden = false;
+  completeOkBtn.focus();
 }
 
 restartRoundBtn.addEventListener('click', () => {
