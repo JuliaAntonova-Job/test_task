@@ -7,11 +7,13 @@ const STAR_SPAWN_INTERVAL_INITIAL_MS = STAR_SPAWN_INTERVAL_MS * 5; // в нач�
 const STAR_SPAWN_INTERVAL_STEP_MS = 100; // на сколько уменьшается интервал после каждого спавна
 const STAR_FALL_SPEED = 2.2; // пикселей за кадр
 const BASKET_SPEED = 6; // пикселей за кадр
+const INITIAL_LIVES = 3;
 
 const startBtn = document.getElementById('start-btn');
 const statusEl = document.getElementById('status');
 const gameField = document.getElementById('game-field');
 const basketEl = document.getElementById('basket');
+const livesEl = document.getElementById('lives');
 const resultEl = document.getElementById('result');
 const resultStatusEl = document.getElementById('result-status');
 const resultScoreEl = document.getElementById('result-score');
@@ -25,6 +27,7 @@ const pressedKeys = new Set();
 
 let stars = [];
 let score = 0;
+let lives = INITIAL_LIVES;
 let taskRunning = false;
 let spawnIntervalId = null;
 let animationFrameId = null;
@@ -41,6 +44,10 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => {
   pressedKeys.delete(e.key);
 });
+
+function updateLivesDisplay() {
+  livesEl.textContent = `Жизни: ${lives}`;
+}
 
 function spawnStar() {
   const el = document.createElement('div');
@@ -69,6 +76,7 @@ function updateBasket() {
 
 function updateStars() {
   const basketTop = fieldHeight - 8 - 24;
+  let missedCount = 0;
 
   stars = stars.filter((star) => {
     star.y += STAR_FALL_SPEED;
@@ -87,14 +95,24 @@ function updateStars() {
       return false;
     }
 
-    // Звезда упала мимо поля — просто убираем
+    // Звезда упала мимо корзины — минус жизнь
     if (star.y > fieldHeight) {
       star.el.remove();
+      missedCount += 1;
       return false;
     }
 
     return true;
   });
+
+  if (missedCount > 0) {
+    lives = Math.max(0, lives - missedCount);
+    updateLivesDisplay();
+
+    if (lives === 0) {
+      restartRound();
+    }
+  }
 }
 
 function gameLoop() {
@@ -116,15 +134,30 @@ function scheduleNextStar() {
   spawnIntervalId = setTimeout(scheduleNextStar, currentSpawnInterval);
 }
 
-function startGame() {
+// Сброс состояния раунда — используется и при первом запуске, и при перезапуске из-за потери жизней
+function resetRoundState() {
   score = 0;
+  lives = INITIAL_LIVES;
+  updateLivesDisplay();
+
   stars.forEach((star) => star.el.remove());
   stars = [];
-  basketX = fieldWidth / 2 - basketWidth / 2;
   currentSpawnInterval = STAR_SPAWN_INTERVAL_INITIAL_MS;
+}
+
+function startGame() {
+  resetRoundState();
+  basketX = fieldWidth / 2 - basketWidth / 2;
 
   scheduleNextStar();
   animationFrameId = requestAnimationFrame(gameLoop);
+}
+
+// Жизни закончились: раунд начинается заново, но таймер задачи не останавливается
+function restartRound() {
+  clearTimeout(spawnIntervalId);
+  resetRoundState();
+  scheduleNextStar();
 }
 
 function stopGame() {
